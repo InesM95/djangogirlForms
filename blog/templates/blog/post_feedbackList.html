@@ -1,0 +1,9 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+    {% for feedback in feedbacks %}
+        <article class="post">
+            <h2>{{ feedback.name }} ( {{ feedback.email }} )</a></h2>
+            <p>{{ feedback.feedback|linebreaksbr }}</p>
+        </article>
+    {% endfor %}
+{% endblock %}

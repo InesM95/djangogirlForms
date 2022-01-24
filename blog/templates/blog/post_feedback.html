@@ -1,0 +1,8 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h2>FeedBack</h2>
+    <p style="color: red">{{ error }}</p>
+    {% crispy form form.helper %}
+{% endblock %}

@@ -7,7 +7,7 @@ urlpatterns = [
     path('post/new/', PostCreate.as_view(), name='post_new'),
     path('post/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
     path('post/<int:pk>/edit/', PostUpdate.as_view(), name='post_edit'),
-    path('post/feedback/', views.PostFeedback, name='feedback'),
-    path('post/feedback/list', views.PostFeedbackList.as_view(), name='feedbackList'),
+    path('post/feedback/', PostFeedback.as_view(), name='feedback'),
+    path('post/feedback/list/', PostFeedbackList.as_view(), name='feedbackList'),
 
 ]

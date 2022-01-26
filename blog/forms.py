@@ -2,7 +2,8 @@ from django import forms
 from .models import Post,Feedback
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class PostForm(forms.ModelForm):
@@ -11,6 +12,16 @@ class PostForm(forms.ModelForm):
         fields = ('title', 'text',)
 
 class FeedbackForm(forms.Form):
+
+    def validate_email(value):
+        domain = value.split('@')[1]
+        domain_list = ["softcatalyst.com", ]
+        if domain not in domain_list:
+            raise ValidationError(
+                _('%(value)s Email is invalid. The email should be a softcatalyst email'),
+                params={'value': value},
+            )
+
     name = forms.CharField(
         label="Name",
         max_length=80,
@@ -20,6 +31,7 @@ class FeedbackForm(forms.Form):
         label="E-mail",
         max_length=80,
         required=True,
+        validators=[validate_email],
     )
     feedback = forms.CharField(
         widget=forms.Textarea(attrs={"rows": 5, "cols": 20}),
@@ -48,12 +60,7 @@ class FeedbackForm(forms.Form):
         )
         feedback.save()
 
-    def clean_email(self):
-        data = self.cleaned_data['email']
-        domain = data.split('@')[1]
-        domain_list = ["softcatalyst.com", ]
-        if domain not in domain_list:
-            raise forms.ValidationError("Email is invalid. The email should be a softcatalyst email")
 
-        return data
+
+
 

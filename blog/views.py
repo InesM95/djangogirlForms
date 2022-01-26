@@ -5,6 +5,7 @@ from .forms import PostForm,FeedbackForm
 from django.views.generic import ListView, CreateView, DetailView, UpdateView,FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
+from django.core.mail import send_mail
 
 
 
@@ -46,9 +47,10 @@ class PostFeedback(FormView):
     success_url = 'list/'
 
     def form_valid(self, form):
-        print("Name : " + form.cleaned_data['name'])
-        print("From : " + form.cleaned_data['email'])
-        print("Feedback : " + form.cleaned_data['feedback'])
+        # send the email
+        send_mail('Feedback', form.cleaned_data['feedback'],
+                  form.cleaned_data['email'], ['inesmiled@softcatalyst.com'])
+
         return  super().form_valid(form)
 
 

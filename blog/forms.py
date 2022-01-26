@@ -2,8 +2,8 @@ from django import forms
 from .models import Post,Feedback
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+
 
 class PostForm(forms.ModelForm):
     class Meta:

@@ -45,6 +45,13 @@ class PostFeedback(FormView):
     form_class = FeedbackForm
     success_url = 'list/'
 
+    def form_valid(self, form):
+        print("Name : " + form.cleaned_data['name'])
+        print("From : " + form.cleaned_data['email'])
+        print("Feedback : " + form.cleaned_data['feedback'])
+        return  super().form_valid(form)
+
+
 class PostFeedbackList(ListView):
     model = Feedback
     context_object_name = 'feedbacks'

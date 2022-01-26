@@ -50,7 +50,6 @@ class FeedbackForm(forms.Form):
 
     def clean_email(self):
         data = self.cleaned_data['email']
-        print(data)
         domain = data.split('@')[1]
         domain_list = ["softcatalyst.com", ]
         if domain not in domain_list:

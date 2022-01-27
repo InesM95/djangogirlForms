@@ -6,7 +6,8 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView,Fo
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.core.mail import send_mail
-
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your views here. ** for newbranch**
@@ -40,6 +41,7 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('post_detail', kwargs={'pk': self.object.pk})
+
 
 class PostFeedback(FormView):
     template_name = 'blog/post_feedback.html'

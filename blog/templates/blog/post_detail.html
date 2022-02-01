@@ -72,8 +72,6 @@
   function editPost(id) {
     if (id) {
       var serializedData = $('#post-form').serializeArray();
-      console.log(serializedData);
-
       $.ajax({
         url: `edit/`, // the endpoint
         type: "POST", // http method

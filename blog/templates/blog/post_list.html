@@ -58,7 +58,7 @@
         // handle a successful response
         success: function (json) {
               $(`#deletePostModal${id}`).modal('hide');
-              window.location.reload();
+              $("#divContent").load("{% url 'post_list'  %}");
         },
 
         // handle a non-successful response

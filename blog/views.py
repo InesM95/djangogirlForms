@@ -1,13 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Post,Feedback
 from .forms import PostForm,FeedbackForm
-from django.views.generic import ListView, CreateView, DetailView, UpdateView,FormView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView,FormView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.core.mail import send_mail
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+
+from django.http import JsonResponse
 
 
 # Create your views here. ** for newbranch**
@@ -15,6 +14,8 @@ from django.utils.translation import gettext_lazy as _
 class PostList(ListView):
     model = Post
     context_object_name = 'posts'
+
+
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
@@ -38,10 +39,18 @@ class PostDetailView(DetailView):
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
     form_class = PostForm
+    model = Post
+    template_name = 'blog/post_edit.html'
 
     def get_success_url(self):
         return reverse('post_detail', kwargs={'pk': self.object.pk})
 
+
+class PostDelete(DeleteView):
+    model = Post
+
+    def get_success_url(self):
+        return reverse('post_list')
 
 class PostFeedback(FormView):
     template_name = 'blog/post_feedback.html'

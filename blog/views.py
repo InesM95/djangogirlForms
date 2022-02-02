@@ -1,3 +1,6 @@
+from crispy_forms.utils import render_crispy_form
+from django.shortcuts import render
+from django.template.context_processors import csrf
 from django.utils import timezone
 from .models import Post,Feedback
 from .forms import PostForm,FeedbackForm
@@ -42,8 +45,30 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
     template_name = 'blog/post_edit.html'
 
-    def get_success_url(self):
-        return reverse('post_detail', kwargs={'pk': self.object.pk})
+    def get(self, request, *args, **kwargs):
+        post = Post.objects.get(pk=kwargs['pk'])
+        form = PostForm(instance=post)
+        ctx = {}
+        ctx.update(csrf(request))
+        response = {'form': render_crispy_form(form, context=ctx)}
+        return JsonResponse(response)
+
+    def post(self, request, *args, **kwargs):
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = Post.objects.get(pk=kwargs['pk'])
+            post.title=form.cleaned_data['title']
+            post.text=form.cleaned_data['text']
+            post.author = self.request.user
+            post.published_date = timezone.now()
+            post.save()
+            return JsonResponse({'success': True})
+        ctx = {}
+        ctx.update(csrf(request))
+        form_html = render_crispy_form(form, context=ctx)
+
+        return JsonResponse({'success': False, 'form_html': form_html})
+
 
 
 class PostDelete(DeleteView):

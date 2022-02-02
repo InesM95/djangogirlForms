@@ -1,7 +1,8 @@
 {% extends 'blog/base.html' %}
+{% load static %}
 {% block content %}
 {% for post in posts %}
-<article class="post">
+<article class="post" id="post{{post.pk}}">
   <time class="date">
     {{ post.published_date }}
   </time>
@@ -46,29 +47,5 @@
 {% endblock %}
 
 {% block javascript %}
-<script>
-  function deletePost(id) {
-    if (id) {
-      var serializedData =$('#formModal').serializeArray();
-      $.ajax({
-        url: `post/${id}/delete/`, // the endpoint
-        type: "POST", // http method
-        data: serializedData , // data sent with the post request
-
-        // handle a successful response
-        success: function (json) {
-              $(`#deletePostModal${id}`).modal('hide');
-              $("#divContent").load("{% url 'post_list'  %}");
-        },
-
-        // handle a non-successful response
-        error: function (xhr, errmsg, err) {
-          $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: " + errmsg +
-            " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
-          console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-        }
-      });
-    }
-  }
-</script>
+ <script src="{% static 'scripts/main.js' %}"></script>
 {% endblock %}

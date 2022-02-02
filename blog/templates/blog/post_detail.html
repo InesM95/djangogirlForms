@@ -1,5 +1,5 @@
 {% extends 'blog/base.html' %}
-{% load static %}
+{% load static crispy_forms_tags crispy_forms_filters %}
 
 
 {% block content %}
@@ -8,7 +8,7 @@
     {% if user.is_authenticated %}
 
     <button type="button" class="btn btn-primary" id="editPostBtn"
-            data-bs-toggle="modal" data-bs-target="#editPostModal">
+            data-bs-toggle="modal" data-bs-target="#editPostModal" onClick="editPost({{post.pk}})">
       <img src="{% static 'icons/pencil-fill.svg' %}" alt="My image">
     </button>
 
@@ -28,23 +28,18 @@
           <!-- Modal body -->
           <div class="modal-body">
             <h2>post</h2>
-            <form method="POST" class="post-form" id="post-form">{% csrf_token %}
+           <div id="results">
 
-              <label for="title">Title:</label>
-              <input type="text" class="form-control" name="title" value="{{ post.title }}" maxlength="200" required=""
-                     id="title">
+           </div>
+           <div id="formContent">
 
-              <label for="text">Text:</label>
-              <textarea name="text" class="form-control" cols="40" rows="10" required=""
-                        id="text">{{ post.text }}</textarea>
-
-            </form>
+           </div>
           </div>
 
           <!-- Modal footer -->
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="save btn btn-secondary" id="editPostBtnS" onClick="editPost({{post.pk}})">
+            <button type="button" class="save btn btn-secondary" id="editPostBtnSave" >
               Save
             </button>
 
@@ -60,46 +55,16 @@
     {{ post.published_date }}
   </time>
   {% endif %}
-  <h2>{{ post.title }}</h2>
-  <p>{{ post.text|linebreaksbr }}</p>
+  <h2 id="titleInput">{{ post.title }}</h2>
+  <p id="textInput">{{ post.text|linebreaksbr }}
+  </p>
 </article>
 
 
 {% endblock %}
 
 {% block javascript %}
-<script>
-  function editPost(id) {
-    if (id) {
-      var serializedData = $('#post-form').serializeArray();
-      $.ajax({
-        url: `edit/`, // the endpoint
-        type: "POST", // http method
-        data: serializedData, // data sent with the post request
-
-        // handle a successful response
-
-        success: function (response) {
-          if(serializedData[1]['value']!='' && serializedData[2]['value']!='') {
-            $('#editPostModal').modal('toggle');
-            window.location.reload();
-          }
-          else
-          {
-            alert("Title or Text empty")
-          }
-
-        },
-        // handle a non-successful response
-        error: function (xhr, errmsg, err) {
-          $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: " + errmsg +
-            " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
-          console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-        }
-      });
-    }
-  }
-
-
-</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="{% static 'scripts/main.js' %}"></script>
 {% endblock %}

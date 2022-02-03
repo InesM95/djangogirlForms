@@ -1,10 +1,9 @@
 from crispy_forms.utils import render_crispy_form
-from django.shortcuts import render
 from django.template.context_processors import csrf
 from django.utils import timezone
 from .models import Post,Feedback
 from .forms import PostForm,FeedbackForm
-from django.views.generic import ListView, CreateView, DetailView, UpdateView,FormView,DeleteView
+from django.views.generic import View,ListView, CreateView, DetailView, UpdateView,FormView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -40,36 +39,26 @@ class PostDetailView(DetailView):
     context_object_name = 'post'
 
 
-class PostUpdate(LoginRequiredMixin, UpdateView):
+class PostUpdate(UpdateView):
     form_class = PostForm
     model = Post
-    template_name = 'blog/post_edit.html'
-
     def get(self, request, *args, **kwargs):
-        post = Post.objects.get(pk=kwargs['pk'])
-        form = PostForm(instance=post)
+        self.object = self.get_object()
+        form = self.get_form()
         ctx = {}
         ctx.update(csrf(request))
         response = {'form': render_crispy_form(form, context=ctx)}
         return JsonResponse(response)
 
-    def post(self, request, *args, **kwargs):
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = Post.objects.get(pk=kwargs['pk'])
-            post.title=form.cleaned_data['title']
-            post.text=form.cleaned_data['text']
-            post.author = self.request.user
-            post.published_date = timezone.now()
-            post.save()
-            return JsonResponse({'success': True})
+    def form_valid(self, form):
+        self.object = form.save()
+        return JsonResponse({'success': True})
+
+    def form_invalid(self, form):
         ctx = {}
-        ctx.update(csrf(request))
+        ctx.update(csrf(self.request))
         form_html = render_crispy_form(form, context=ctx)
-
         return JsonResponse({'success': False, 'form_html': form_html})
-
-
 
 class PostDelete(DeleteView):
     model = Post
